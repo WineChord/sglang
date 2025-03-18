@@ -77,6 +77,17 @@ class ModelConfig:
         self.is_encoder_decoder = is_encoder_decoder_model(self.hf_config.architectures)
         self.dtype = _get_and_verify_dtype(self.hf_text_config, dtype)
 
+        # Check if AWQ quantization is being used and enforce fp16 dtype
+        if self.quantization is not None:
+            quant_method = self.quantization.lower() if isinstance(self.quantization, str) else None
+            if quant_method in ["awq", "awq_marlin"]:
+                if self.dtype != torch.float16:
+                    logger.warning(
+                        f"AWQ quantization only supports fp16 dtype, but got {self.dtype}. "
+                        "Forcing dtype to fp16."
+                    )
+                    self.dtype = torch.float16
+
         # Derive context length
         derived_context_len = get_context_length(self.hf_text_config)
         if context_length is not None:

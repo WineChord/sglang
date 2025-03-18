@@ -281,9 +281,9 @@ class GPTQMarlinConfig(QuantizationConfig):
 
         from vllm.model_executor.layers.quantization.gptq_marlin import (
             GPTQMarlinLinearMethod,
-            GPTQMarlinMoEMethod,
         )
-
+        # Import our custom wrapper instead of vllm's implementation
+        from sglang.srt.layers.quantization import GPTQMarlinMoEMethod
         from sglang.srt.layers.moe.fused_moe_triton import FusedMoE
         from sglang.srt.layers.quantization import get_linear_quant_method
 

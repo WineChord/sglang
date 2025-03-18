@@ -663,7 +663,11 @@ class DeepseekV2AttentionMLA(nn.Module):
                 q_nope_val, self.w_kc, q_nope_scale, self.w_scale, torch.bfloat16
             )
         else:
-            q_nope_out = torch.bmm(q_nope.transpose(0, 1), self.w_kc)
+            # Ensure data types match for bmm operation
+            if q_nope.dtype != self.w_kc.dtype:
+                q_nope_out = torch.bmm(q_nope.to(self.w_kc.dtype).transpose(0, 1), self.w_kc)
+            else:
+                q_nope_out = torch.bmm(q_nope.transpose(0, 1), self.w_kc)
         q_input[..., : self.kv_lora_rank] = q_nope_out.transpose(0, 1)
 
         latent_cache = self.kv_a_proj_with_mqa(hidden_states)[0]
@@ -698,7 +702,11 @@ class DeepseekV2AttentionMLA(nn.Module):
                 torch.bfloat16,
             )
         else:
-            attn_bmm_output = torch.bmm(attn_output.transpose(0, 1), self.w_vc)
+            # Ensure data types match for bmm operation
+            if attn_output.dtype != self.w_vc.dtype:
+                attn_bmm_output = torch.bmm(attn_output.to(self.w_vc.dtype).transpose(0, 1), self.w_vc)
+            else:
+                attn_bmm_output = torch.bmm(attn_output.transpose(0, 1), self.w_vc)
         attn_output = attn_bmm_output.transpose(0, 1).flatten(1, 2)
         output, _ = self.o_proj(attn_output)
 
@@ -741,7 +749,11 @@ class DeepseekV2AttentionMLA(nn.Module):
                 q_nope_val, self.w_kc, q_nope_scale, self.w_scale, torch.bfloat16
             )
         else:
-            q_nope_out = torch.bmm(q_nope.transpose(0, 1), self.w_kc)
+            # Ensure data types match for bmm operation
+            if q_nope.dtype != self.w_kc.dtype:
+                q_nope_out = torch.bmm(q_nope.to(self.w_kc.dtype).transpose(0, 1), self.w_kc)
+            else:
+                q_nope_out = torch.bmm(q_nope.transpose(0, 1), self.w_kc)
         q_input[..., : self.kv_lora_rank] = q_nope_out.transpose(0, 1)
 
         latent_cache = self.kv_a_proj_with_mqa(hidden_states)[0]
@@ -841,7 +853,11 @@ class DeepseekV2AttentionMLA(nn.Module):
                 torch.bfloat16,
             )
         else:
-            attn_bmm_output = torch.bmm(attn_output.transpose(0, 1), self.w_vc)
+            # Ensure data types match for bmm operation
+            if attn_output.dtype != self.w_vc.dtype:
+                attn_bmm_output = torch.bmm(attn_output.to(self.w_vc.dtype).transpose(0, 1), self.w_vc)
+            else:
+                attn_bmm_output = torch.bmm(attn_output.transpose(0, 1), self.w_vc)
         attn_output = attn_bmm_output.transpose(0, 1).flatten(1, 2)
         output, _ = self.o_proj(attn_output)
 
